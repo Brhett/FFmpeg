@@ -86,8 +86,12 @@ static int file_get_handle(URLContext *h)
 static int file_check(URLContext *h, int mask)
 {
     struct stat st;
+    int ret;
     const char *filename = h->filename;
-    int ret = stat(filename, &st);
+
+    av_strstart(filename, "file:", &filename);
+
+    ret = stat(filename, &st);
     if (ret < 0)
         return AVERROR(errno);
 

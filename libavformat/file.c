@@ -86,12 +86,13 @@ static int file_get_handle(URLContext *h)
 static int file_check(URLContext *h, int mask)
 {
     struct stat st;
-    int ret = stat(h->filename, &st);
+    const char *filename = h->filename;
+    int ret = stat(filename, &st);
     if (ret < 0)
         return AVERROR(errno);
 
-    ret |= st.st_mode&S_IRUSR ? mask&AVIO_FLAG_READ  : 0;
-    ret |= st.st_mode&S_IWUSR ? mask&AVIO_FLAG_WRITE : 0;
+    ret |= st.st_mode&(S_IRUSR|S_IROTH) ? mask&AVIO_FLAG_READ  : 0;
+    ret |= st.st_mode&(S_IWUSR|S_IWOTH) ? mask&AVIO_FLAG_WRITE : 0;
 
     return ret;
 }
